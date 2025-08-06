@@ -30,11 +30,13 @@ jobs:
       run: |
         curl -L https://fly.io/install.sh | sh
         echo "$HOME/.fly/bin" >> $GITHUB_PATH
+        export PATH="$HOME/.fly/bin:$PATH"
+        flyctl version
 
     - name: Check if Fly app exists
       id: check_app
       run: |
-        if ~/.fly/bin/flyctl apps list | grep -q simple-docker-ci-app; then
+        if flyctl apps list | grep -q simple-docker-ci-app; then
           echo "app_exists=true" >> $GITHUB_OUTPUT
         else
           echo "app_exists=false" >> $GITHUB_OUTPUT
@@ -44,13 +46,11 @@ jobs:
 
     - name: Create Fly app if missing
       if: steps.check_app.outputs.app_exists == 'false'
-      run: ~/.fly/bin/flyctl apps create --name simple-docker-ci-app --yes
+      run: flyctl apps create --name simple-docker-ci-app --yes
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
     - name: Deploy to Fly.io
-      uses: superfly/flyctl-actions@1.4
-      with:
-        args: "deploy --remote-only --app simple-docker-ci-app"
+      run: flyctl deploy --remote-only --app simple-docker-ci-app
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
