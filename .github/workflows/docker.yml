@@ -26,10 +26,20 @@ jobs:
         push: true
         tags: quarwork/simple-docker-ci-app:latest
 
-    - name: Ensure Fly app exists
+    - name: Check if Fly app exists
+      uses: superfly/flyctl-actions@1.4
+      id: check_app
+      with:
+        args: "apps show simple-docker-ci-app"
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      continue-on-error: true
+
+    - name: Create Fly app if missing
+      if: steps.check_app.outcome == 'failure'
       uses: superfly/flyctl-actions@1.4
       with:
-        args: "apps show simple-docker-ci-app || apps create simple-docker-ci-app --region fra"
+        args: "apps create simple-docker-ci-app --region fra"
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
