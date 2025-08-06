@@ -1,4 +1,4 @@
-name: Build and Push Docker image to Docker Hub
+name: Build and Push Docker image to Docker Hub and Deploy to Fly.io
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,9 +26,15 @@ jobs:
         push: true
         tags: quarwork/simple-docker-ci-app:latest
 
+    - name: Ensure Fly app exists
+      run: |
+        flyctl apps show simple-docker-ci-app || flyctl apps create simple-docker-ci-app --region fra
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
     - name: Deploy to Fly.io
       uses: superfly/flyctl-actions@1.4
       with:
-        args: "deploy --remote-only"
+        args: "deploy --remote-only --app simple-docker-ci-app"
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
