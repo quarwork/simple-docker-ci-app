@@ -24,4 +24,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: yourdockerhubusername/color-app:latest
+        tags: quarwork/simple-docker-ci-app:latest
