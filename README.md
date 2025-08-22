@@ -33,7 +33,7 @@ def home():
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=5000)
-```python
+```
 
 ## 📌 Deliverables
 
@@ -51,9 +51,12 @@ if __name__ == "__main__":
 
 ## 📂 Project Structure
 
+```bash
 simple-docker-ci-app/
 │── .github/
 │   └── workflows/docker.yml      # GitHub Actions CI/CD workflow
+│── assets/
+│   └── demo.png                  # Demo screenshot
 │── .gitignore                    # Git ignore file
 │── Dockerfile                    # Docker container definition
 │── LICENSE                       # MIT license
@@ -61,19 +64,24 @@ simple-docker-ci-app/
 │── app.py                        # Demo app source code (Python Flask)
 │── fly.toml                      # Fly.io deployment configuration
 │── requirements.txt              # Python dependencies
-│── assets/
-│   └── demo.png                  # Demo screenshot
+```
 
 ## ▶️ Run Locally
 
 1. Clone the repository:
+```bash
     git clone https://github.com/quarwork/simple-docker-ci-app.git
     cd simple-docker-ci-app
+```
 2. Build the Docker image:
+```bash
     docker build -t simple-docker-ci-app .
-3. Run the container:
+```
+5. Run the container:
+```bash
     docker run -p 8080:80 simple-docker-ci-app
-4. Open in your browser:
+```
+7. Open in your browser:
     [http://localhost:8080](http://localhost:8080)
 
 ## 🚀 Automatic Deployment on Fly.io
