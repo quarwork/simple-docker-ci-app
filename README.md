@@ -95,10 +95,10 @@ simple-docker-ci-app/
 ```
 5. Run the container:
 ```bash
-    docker run -p 8080:80 simple-docker-ci-app
+    docker run -p 5000:5000 simple-docker-ci-app
 ```
 7. Open in your browser:
-    [http://localhost:8080](http://localhost:8080)
+    [http://localhost:5000/](http://localhost:5000/)
 
 ## 🚀 Automatic Deployment on Fly.io
 
