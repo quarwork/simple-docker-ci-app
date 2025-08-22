@@ -1,19 +1,29 @@
+# The name of your Fly.io application
 app = "simple-docker-ci-app"
 
+# Section defining how to build or fetch the image
 [build]
+  # Uses the Docker image from Docker Hub
   image = "quarwork/simple-docker-ci-app:latest"
 
+# Environment variables that will be passed to the container
 [env]
+  # Flask listens on port 5000 (must match the app.py configuration)
   PORT = "5000"
 
+# Services section defines how Fly.io should expose the app to the internet
 [[services]]
+  # The port inside the container where the app listens
   internal_port = 5000
+  # Protocol used for communication
   protocol = "tcp"
 
+  # Map external HTTP traffic (port 80) to the internal app port (5000)
   [[services.ports]]
     handlers = ["http"]
     port = 80
 
+  # Map external HTTPS traffic (port 443) to the internal app port (5000)
   [[services.ports]]
     handlers = ["tls", "http"]
     port = 443
