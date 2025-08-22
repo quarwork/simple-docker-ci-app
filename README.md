@@ -96,10 +96,12 @@ As a result, the app is available online at:
 ## ⚙️ CI/CD Workflow
 
 Simplified pipeline diagram:
+```lua
    ┌─────────────┐        ┌───────────────┐       ┌────────────────┐        ┌─────────────┐
    │   GitHub    │  push  │ GitHub        │ build │ Docker Hub     │  pull  │   Fly.io    │
    │ Repository  │──────▶ │ Actions CI/CD│──────▶│ Image Registry │──────▶│ Deployment  │
    └─────────────┘        └───────────────┘       └────────────────┘        └─────────────┘
+```
 1. Push to main → triggers GitHub Actions.
 2. Workflow steps:
 - Build Docker image.
