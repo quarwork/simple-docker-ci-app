@@ -1,5 +1,7 @@
 name: Build and Push Docker image to Docker Hub and Deploy to Fly.io
 
+# 🚀 When this workflow runs:
+# It will be triggered automatically on every push to the main branch
 on:
   push:
     branches:
@@ -7,18 +9,30 @@ on:
 
 jobs:
   build-and-deploy:
+    # 🖥️ Run this job inside a virtual machine with Ubuntu
     runs-on: ubuntu-latest
 
     steps:
+    # 1️⃣ Checkout repository
+    # This pulls the repository code into the CI environment
+    # so we can use files like Dockerfile, app.py, etc.
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    # 2️⃣ Log in to Docker Hub
+    # Authenticates with Docker Hub using secrets stored in GitHub
+    # DOCKERHUB_USERNAME → Docker Hub username
+    # DOCKERHUB_TOKEN → personal access token (like a password for CI)
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+    # 3️⃣ Build and push Docker image
+    # - context: .   → use the current directory with Dockerfile
+    # - push: true   → publish the image to Docker Hub after build
+    # - tags         → specify image name and tag (quarwork/simple-docker-ci-app:latest)
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -26,13 +40,21 @@ jobs:
         push: true
         tags: quarwork/simple-docker-ci-app:latest
 
+    # 4️⃣ Install Fly.io CLI (flyctl)
+    # Downloads and installs the official flyctl client to manage Fly.io apps
+    # Adds it to PATH so commands can be executed
     - name: Install flyctl
       run: |
         curl -L https://fly.io/install.sh | sh
         echo "$HOME/.fly/bin" >> $GITHUB_PATH
         export PATH="$HOME/.fly/bin:$PATH"
-        flyctl version
+        flyctl version   # Check installation
 
+    # 5️⃣ Check if Fly app already exists
+    # - Runs "flyctl apps list" to see all apps
+    # - If an app named "simple-docker-ci-app" is found → app_exists=true
+    # - Otherwise → app_exists=false
+    # The result is stored as GitHub Actions output for later steps
     - name: Check if Fly app exists
       id: check_app
       run: |
@@ -42,15 +64,22 @@ jobs:
           echo "app_exists=false" >> $GITHUB_OUTPUT
         fi
       env:
-        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}  # API token for Fly.io
 
+    # 6️⃣ Create Fly app if it doesn’t exist
+    # If the previous step showed that the app is missing (app_exists=false)
+    # then we create a new app with the given name
     - name: Create Fly app if missing
       if: steps.check_app.outputs.app_exists == 'false'
       run: flyctl apps create --name simple-docker-ci-app --yes
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-    - name: Deploy to Fly.io
-      run: flyctl deploy --remote-only --app simple-docker-ci-app
+    # 7️⃣ Deploy app to Fly.io
+    # Use the already published Docker image from Docker Hub
+    # --image quarwork/simple-docker-ci-app:latest → specify the image to deploy
+    # --app simple-docker-ci-app → the Fly.io app name where deployment happens
+    - name: Deploy to Fly.io using Docker Hub image
+      run: flyctl deploy --image quarwork/simple-docker-ci-app:latest --app simple-docker-ci-app
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
