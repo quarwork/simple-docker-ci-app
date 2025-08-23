@@ -93,11 +93,11 @@ simple-docker-ci-app/
 ```bash
     docker build -t simple-docker-ci-app .
 ```
-5. Run the container:
+3. Run the container:
 ```bash
     docker run -p 5000:5000 simple-docker-ci-app
 ```
-7. Open in your browser:
+4. Open in your browser:
     [http://localhost:5000/](http://localhost:5000/)
 
 ## 🚀 Automatic Deployment on Fly.io
